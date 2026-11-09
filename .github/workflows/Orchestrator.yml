@@ -1,6 +1,7 @@
 name: Orchestrator
 
 on:
+  workflow_dispatch:
   push:
     paths-ignore:
       - '*.md'
@@ -82,9 +83,11 @@ jobs:
     needs: [build-windows, build-linux]
     if: |-
       always() &&
-      github.repository == 'xenia-canary/xenia-canary' &&
+      ((github.repository == 'xenia-canary/xenia-canary' &&
       github.event_name == 'push' &&
-      github.ref == 'refs/heads/canary_experimental' &&
+      github.ref == 'refs/heads/canary_experimental') ||
+      (github.event_name == 'workflow_dispatch' &&
+      github.ref == 'refs/heads/canary_burnout5-2026-online-experiment')) &&
       (needs.build-windows.result == 'success' && needs.build-linux.result == 'success')
     uses: ./.github/workflows/Create_release.yml
     permissions:
